@@ -298,7 +298,7 @@
         }
 
         .download-button {
-            background: var(--accent); /* Changed to yellow */
+            background: var(--accent);
             color: white;
             padding: 15px 30px;
             border: none;
@@ -392,7 +392,7 @@
 
     <div class="container">
         <div class="input-section" id="inputSection">
-            <h2>Tell Us More About You</h2> <!-- Changed from "Your Financial Details" -->
+            <h2>Tell Us More About You</h2>
             <div id="clientA" class="client-group">
                 <div class="client-row">
                     <div class="input-group">
@@ -524,7 +524,7 @@
         </div>
     </div>
 
-    <button class="download-button" onclick="downloadResults()">Download Your Detailed Financial Fitness Score</button> <!-- Updated text and color -->
+    <button class="download-button" onclick="downloadResults()">Download Your Detailed Financial Fitness Score</button>
 
     <div class="advisor-section">
         <img src="Headshot.jpg" alt="Financial Advisor" class="advisor-img">
@@ -545,6 +545,7 @@
             document.getElementById('retirementBGroup').style.display = 'block';
             document.getElementById('subtitle').textContent = 'Assess Your Combined Financial Health';
             document.getElementById('introText').textContent = 'Get a clear picture of your combined financial fitness with your spouse and take the first step toward a stronger future together.';
+            document.getElementById('introText').style.color = 'white'; /* Changed to white for visibility on blue background */
         }
 
         if (excludeCollege) {
