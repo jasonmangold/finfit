@@ -9,7 +9,7 @@
             --primary: #1a3c6d;
             --secondary: #26a69a;
             --accent: #f4a261;
-            --background: linear-gradient(to bottom, #f4f7fa, #e8f0f5);
+            --background: linear-gradient(to bottom, #1a2b4b, #2d4a6e);
             --card-bg: #ffffff;
             --text: #333333;
             --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -24,6 +24,8 @@
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--background);
+            background-size: cover;
+            background-repeat: no-repeat;
             color: var(--text);
             line-height: 1.6;
             padding: 40px 20px;
@@ -146,7 +148,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="https://via.placeholder.com/80x80?text=Logo" alt="Logo" class="logo">
+        <img src="Logo.png" alt="Logo" class="logo">
         <div class="header-text">
             <h1>Financial Fitness Score</h1>
             <p>Your Path to Financial Clarity</p>
@@ -166,7 +168,7 @@
         </div>
     </div>
 
-    <button class="next-button" id="nextButton" onclick="goToCalculator()" disabled>Next</button>
+    <button class="next-button" id="nextButton" onclick="goToRanking()" disabled>Next</button>
 
     <script>
         let selectedChoice = null;
@@ -180,9 +182,9 @@
             document.getElementById('nextButton').disabled = false;
         }
 
-        function goToCalculator() {
+        function goToRanking() {
             if (selectedChoice) {
-                const url = `calculator.html?type=${selectedChoice}`;
+                const url = `ranking.html?type=${selectedChoice}`;
                 window.location.href = url;
             }
         }
