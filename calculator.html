@@ -298,7 +298,7 @@
         }
 
         .download-button {
-            background: linear-gradient(to right, var(--secondary), #1f857b);
+            background: var(--accent); /* Changed to yellow */
             color: white;
             padding: 15px 30px;
             border: none;
@@ -392,7 +392,7 @@
 
     <div class="container">
         <div class="input-section" id="inputSection">
-            <h2>Your Financial Details</h2>
+            <h2>Tell Us More About You</h2> <!-- Changed from "Your Financial Details" -->
             <div id="clientA" class="client-group">
                 <div class="client-row">
                     <div class="input-group">
@@ -524,10 +524,10 @@
         </div>
     </div>
 
-    <button class="download-button" onclick="downloadResults()">Download Your Results</button>
+    <button class="download-button" onclick="downloadResults()">Download Your Detailed Financial Fitness Score</button> <!-- Updated text and color -->
 
     <div class="advisor-section">
-        <img src="Headshot.JPG" alt="Financial Advisor" class="advisor-img">
+        <img src="Headshot.jpg" alt="Financial Advisor" class="advisor-img">
         <p>Need personalized advice? Connect with our expert financial advisor.</p>
         <button class="contact-button" onclick="window.location.href='#consultation'">Contact Advisor</button>
     </div>
