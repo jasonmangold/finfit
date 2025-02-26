@@ -9,7 +9,7 @@
             --primary: #1a3c6d;
             --secondary: #26a69a;
             --accent: #f4a261;
-            --background: linear-gradient(to bottom, #f4f7fa, #e8f0f5);
+            --background: linear-gradient(to bottom, #1a2b4b, #2d4a6e); /* Dark blue gradient with dots, matching your image */
             --card-bg: #ffffff;
             --text: #333333;
             --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -24,6 +24,8 @@
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--background);
+            background-size: cover;
+            background-repeat: no-repeat;
             color: var(--text);
             line-height: 1.6;
             padding: 40px 20px;
@@ -102,10 +104,19 @@
         }
 
         .client-group {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
-        .client-group h3 {
+        .client-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .client-row .input-group {
+            flex: 1;
+        }
+
+        .client-row h3 {
             color: var(--primary);
             font-size: 20px;
             margin-bottom: 15px;
@@ -119,7 +130,7 @@
 
         .input-group {
             position: relative;
-            margin: 20px 0;
+            margin: 15px 0;
         }
 
         label {
@@ -189,6 +200,7 @@
             clip-path: polygon(50% 100%, 50% 50%, 100% 50%, 100% 100%);
             transform: rotate(270deg);
             transition: transform 0.5s;
+            transform: rotate(270deg); /* Starts empty (0% fill) */
         }
 
         .gauge-mask {
@@ -296,20 +308,6 @@
             color: var(--secondary);
         }
 
-        .advisor-cta {
-            display: block;
-            margin-top: 10px;
-            color: var(--accent);
-            font-weight: 600;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .advisor-cta:hover {
-            color: #e68a4f;
-        }
-
         .download-button {
             background: linear-gradient(to right, var(--secondary), #1f857b);
             color: white;
@@ -321,10 +319,49 @@
             font-weight: 600;
             transition: transform 0.2s ease;
             display: block;
-            margin: 40px auto 10px;
+            margin: 40px auto 20px;
         }
 
         .download-button:hover {
+            transform: scale(1.05);
+        }
+
+        .advisor-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .advisor-section img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        .advisor-section p {
+            color: #555;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .contact-button {
+            background: var(--secondary);
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .contact-button:hover {
+            background: #1f857b;
             transform: scale(1.05);
         }
 
@@ -341,6 +378,13 @@
             }
             .results {
                 grid-template-columns: 1fr;
+            }
+            .client-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .client-row .input-group {
+                flex: auto;
             }
         }
     </style>
@@ -361,41 +405,47 @@
         <div class="input-section" id="inputSection">
             <h2>Your Financial Details</h2>
             <div id="clientA" class="client-group">
-                <h3>Client A</h3>
-                <div class="input-group">
-                    <label for="ageA">Age</label>
-                    <input type="number" id="ageA" min="18" max="100">
+                <div class="client-row">
+                    <div class="input-group">
+                        <h3>Client A</h3>
+                        <label for="ageA">Age</label>
+                        <input type="number" id="ageA" min="18" max="100">
+                    </div>
+                    <div class="input-group" style="display: none;" id="clientBGroup">
+                        <h3>Client B (Spouse)</h3>
+                        <label for="ageB">Age</label>
+                        <input type="number" id="ageB" min="18" max="100">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="incomeA">Annual Income ($)</label>
-                    <input type="number" id="incomeA" min="0">
+                <div class="client-row">
+                    <div class="input-group">
+                        <label for="incomeA">Annual Income ($)</label>
+                        <input type="number" id="incomeA" min="0">
+                    </div>
+                    <div class="input-group" style="display: none;" id="incomeBGroup">
+                        <label for="incomeB">Annual Income ($)</label>
+                        <input type="number" id="incomeB" min="0">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="insuranceA">Life Insurance ($)</label>
-                    <input type="number" id="insuranceA" min="0">
+                <div class="client-row">
+                    <div class="input-group">
+                        <label for="insuranceA">Life Insurance ($)</label>
+                        <input type="number" id="insuranceA" min="0">
+                    </div>
+                    <div class="input-group" style="display: none;" id="insuranceBGroup">
+                        <label for="insuranceB">Life Insurance ($)</label>
+                        <input type="number" id="insuranceB" min="0">
+                    </div>
                 </div>
-                <div class="input-group">
-                    <label for="retirementA">Monthly Retirement Savings ($)</label>
-                    <input type="number" id="retirementA" min="0">
-                </div>
-            </div>
-            <div id="clientB" class="client-group" style="display: none;">
-                <h3>Client B (Spouse)</h3>
-                <div class="input-group">
-                    <label for="ageB">Age</label>
-                    <input type="number" id="ageB" min="18" max="100">
-                </div>
-                <div class="input-group">
-                    <label for="incomeB">Annual Income ($)</label>
-                    <input type="number" id="incomeB" min="0">
-                </div>
-                <div class="input-group">
-                    <label for="insuranceB">Life Insurance ($)</label>
-                    <input type="number" id="insuranceB" min="0">
-                </div>
-                <div class="input-group">
-                    <label for="retirementB">Monthly Retirement Savings ($)</label>
-                    <input type="number" id="retirementB" min="0">
+                <div class="client-row">
+                    <div class="input-group">
+                        <label for="retirementA">Monthly Retirement Savings ($)</label>
+                        <input type="number" id="retirementA" min="0">
+                    </div>
+                    <div class="input-group" style="display: none;" id="retirementBGroup">
+                        <label for="retirementB">Monthly Retirement Savings ($)</label>
+                        <input type="number" id="retirementB" min="0">
+                    </div>
                 </div>
             </div>
             <div class="input-group">
@@ -425,7 +475,9 @@
                     <h3>Retirement</h3>
                     <div class="score-display" id="retirementScore">0</div>
                     <div class="bar-container"><div class="bar" id="retirementBar"></div></div>
-                    <p class="result-text" id="retirementText">-</p>
+                    <p class="result-text" id="retirementText">
+                        Suggested guideline is to be saving 20% of your income towards retirement.
+                    </p>
                     <div class="learn-more">
                         <a href="#" class="learn-more-btn" onclick="toggleDropdown(event)">Learn More</a>
                         <div class="dropdown" id="retirementDropdown">
@@ -434,13 +486,14 @@
                             <a href="#">Investing for the Future</a>
                         </div>
                     </div>
-                    <a href="#consultation" class="advisor-cta">Talk to an Advisor</a>
                 </div>
                 <div class="result-box" id="insuranceResult">
                     <h3>Life Insurance</h3>
                     <div class="score-display" id="insuranceScore">0</div>
                     <div class="bar-container"><div class="bar" id="insuranceBar"></div></div>
-                    <p class="result-text" id="insuranceText">-</p>
+                    <p class="result-text" id="insuranceText">
+                        Suggested guideline is to have 10 times your income in life insurance.
+                    </p>
                     <div class="learn-more">
                         <a href="#" class="learn-more-btn" onclick="toggleDropdown(event)">Learn More</a>
                         <div class="dropdown" id="insuranceDropdown">
@@ -449,13 +502,14 @@
                             <a href="#">Insurance Needs Assessment</a>
                         </div>
                     </div>
-                    <a href="#consultation" class="advisor-cta">Talk to an Advisor</a>
                 </div>
                 <div class="result-box" id="debtResult">
                     <h3>Debt</h3>
                     <div class="score-display" id="debtScore">0</div>
                     <div class="bar-container"><div class="bar" id="debtBar"></div></div>
-                    <p class="result-text" id="debtText">-</p>
+                    <p class="result-text" id="debtText">
+                        Suggested guideline is to have debt payments be less than 36% of your monthly income.
+                    </p>
                     <div class="learn-more">
                         <a href="#" class="learn-more-btn" onclick="toggleDropdown(event)">Learn More</a>
                         <div class="dropdown" id="debtDropdown">
@@ -464,13 +518,14 @@
                             <a href="#">Budgeting for Debt Reduction</a>
                         </div>
                     </div>
-                    <a href="#consultation" class="advisor-cta">Talk to an Advisor</a>
                 </div>
                 <div class="result-box" id="collegeResult">
                     <h3>College</h3>
                     <div class="score-display" id="collegeScore">0</div>
                     <div class="bar-container"><div class="bar" id="collegeBar"></div></div>
-                    <p class="result-text" id="collegeText">-</p>
+                    <p class="result-text" id="collegeText">
+                        Suggested guideline is to be saving 5% of your income towards college.
+                    </p>
                     <div class="learn-more">
                         <a href="#" class="learn-more-btn" onclick="toggleDropdown(event)">Learn More</a>
                         <div class="dropdown" id="collegeDropdown">
@@ -479,7 +534,6 @@
                             <a href="#">Education Funding Options</a>
                         </div>
                     </div>
-                    <a href="#consultation" class="advisor-cta">Talk to an Advisor</a>
                 </div>
             </div>
         </div>
@@ -487,13 +541,22 @@
 
     <button class="download-button" onclick="downloadResults()">Download Your Results</button>
 
+    <div class="advisor-section">
+        <img src="https://via.placeholder.com/100x100?text=Advisor" alt="Financial Advisor" class="advisor-img">
+        <p>Need personalized advice? Connect with our expert financial advisor.</p>
+        <button class="contact-button" onclick="window.location.href='#consultation'">Contact Advisor</button>
+    </div>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const scoreType = urlParams.get('type');
         const isCombined = scoreType === 'combined';
 
         if (isCombined) {
-            document.getElementById('clientB').style.display = 'block';
+            document.getElementById('clientBGroup').style.display = 'block';
+            document.getElementById('incomeBGroup').style.display = 'block';
+            document.getElementById('insuranceBGroup').style.display = 'block';
+            document.getElementById('retirementBGroup').style.display = 'block';
             document.getElementById('subtitle').textContent = 'Assess Your Combined Financial Health';
             document.getElementById('introText').textContent = 'Get a clear picture of your combined financial fitness with your spouse and take the first step toward a stronger future together.';
         }
@@ -525,12 +588,16 @@
             // Individual scores for Client A
             const retirementScoreA = Math.round(Math.min((retirementA / (monthlyIncomeA * 0.20)) * 10, 10));
             const insuranceScoreA = Math.round(Math.min((insuranceA / (incomeA * 10)) * 10, 10));
+            const retirementPercentA = ((retirementA / monthlyIncomeA) * 100).toFixed(1);
+            const insuranceTimesA = (insuranceA / incomeA).toFixed(1);
 
             // Individual scores for Client B (if combined)
-            let retirementScoreB = 0, insuranceScoreB = 0;
+            let retirementScoreB = 0, insuranceScoreB = 0, retirementPercentB = 0, insuranceTimesB = 0;
             if (isCombined) {
                 retirementScoreB = Math.round(Math.min((retirementB / (monthlyIncomeB * 0.20)) * 10, 10));
                 insuranceScoreB = Math.round(Math.min((insuranceB / (incomeB * 10)) * 10, 10));
+                retirementPercentB = ((retirementB / monthlyIncomeB) * 100).toFixed(1);
+                insuranceTimesB = (insuranceB / incomeB).toFixed(1);
             }
 
             // Average scores for Retirement and Insurance
@@ -540,31 +607,50 @@
             // Debt and College scores (shared)
             const debtScore = Math.round(Math.max(((0.36 - (debt / totalMonthlyIncome)) / 0.36) * 10, 0));
             const collegeScore = Math.round(Math.min((college / (totalMonthlyIncome * 0.05)) * 10, 10));
+            const debtPercent = ((debt / totalMonthlyIncome) * 100).toFixed(1);
+            const collegePercent = ((college / totalMonthlyIncome) * 100).toFixed(1);
 
             const scores = [retirementScore, insuranceScore, debtScore];
             if (!excludeCollege) scores.push(collegeScore);
             const totalScore = Math.round(scores.reduce((a, b) => a + b) / scores.length);
 
-            const gaugeAngle = (totalScore / 10) * 180;
+            // Update gauge (fills left to right, starts empty, 1 = 10%, 5 = 50%, 10 = 100%)
+            const fillPercentage = (totalScore / 10) * 100; // 0% to 100%
+            const gaugeAngle = (fillPercentage / 100) * 180; // 0° to 180°
             document.getElementById('gaugeFill').style.transform = `rotate(${270 + gaugeAngle}deg)`;
             document.getElementById('totalScore').textContent = totalScore;
 
-            updateResult('retirement', retirementScore);
-            updateResult('insurance', insuranceScore);
-            updateResult('debt', debtScore);
-            updateResult('college', collegeScore, excludeCollege);
+            // Update results
+            updateResult('retirement', retirementScore, retirementPercentA, retirementPercentB, isCombined);
+            updateResult('insurance', insuranceScore, insuranceTimesA, insuranceTimesB, isCombined);
+            updateResult('debt', debtScore, debtPercent);
+            updateResult('college', collegeScore, collegePercent, excludeCollege);
 
             document.getElementById('collegeResult').style.display = excludeCollege ? 'none' : 'block';
         }
 
-        function updateResult(category, score, exclude = false) {
+        function updateResult(category, score, valueA, valueB = null, isCombined = false, exclude = false) {
             const scoreElement = document.getElementById(`${category}Score`);
             const textElement = document.getElementById(`${category}Text`);
             const boxElement = document.getElementById(`${category}Result`);
             const barElement = document.getElementById(`${category}Bar`);
 
             scoreElement.textContent = score;
-            textElement.textContent = exclude && category === 'college' ? 'Excluded' : getResultText(score);
+            let textContent = '';
+
+            if (category === 'retirement') {
+                textContent = `Suggested guideline is to be saving 20% of your income towards retirement. You are currently saving ${valueA}%${isCombined ? `, and Client B is currently saving ${valueB}%.` : '.'}`;
+            } else if (category === 'insurance') {
+                textContent = `Suggested guideline is to have 10 times your income in life insurance. Client A currently has ${valueA} times your income${isCombined ? `, and Client B currently has ${valueB} times their income.` : '.'}`;
+            } else if (category === 'debt') {
+                textContent = `Suggested guideline is to have debt payments be less than 36% of your monthly income. Your debt payments are currently ${valueA}% of your income.`;
+            } else if (category === 'college' && !exclude) {
+                textContent = `Suggested guideline is to be saving 5% of your income towards college. You are currently saving ${valueA}%.`;
+            } else if (exclude && category === 'college') {
+                textContent = 'Excluded';
+            }
+
+            textElement.textContent = textContent;
             barElement.style.width = `${score * 10}%`;
 
             boxElement.classList.remove('red', 'yellow', 'green');
@@ -588,6 +674,7 @@
         function downloadResults() {
             const totalScore = document.getElementById('totalScore').textContent;
             const excludeCollege = document.getElementById('excludeCollege').checked;
+            const isCombined = document.getElementById('clientBGroup').style.display !== 'none';
             const results = `
 Financial Fitness Score: ${totalScore}
 
