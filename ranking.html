@@ -89,29 +89,59 @@
             font-size: 22px;
         }
 
-        .draggable-items {
+        .priority-list {
             list-style: none;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            min-height: 200px;
+            margin-bottom: 20px;
         }
 
-        .draggable-item {
+        .priority-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             background: #f9fbfc;
             padding: 15px;
             border-radius: 8px;
             border: 2px solid #e0e0e0;
-            cursor: move;
+            margin-bottom: 10px;
             font-size: 16px;
             color: var(--primary);
             transition: border-color 0.3s ease;
         }
 
-        .draggable-item.dragging {
-            opacity: 0.5;
+        .priority-item:hover {
             border-color: var(--secondary);
+        }
+
+        .priority-text {
+            flex: 1;
+        }
+
+        .arrow-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .arrow-btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .arrow-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .arrow-btn:hover:not(:disabled) {
+            background: #1f857b;
+            transform: scale(1.1);
         }
 
         .checkbox-group {
@@ -153,6 +183,14 @@
                 flex-direction: column;
                 text-align: center;
             }
+            .priority-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .arrow-buttons {
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
@@ -169,7 +207,7 @@
 
     <div class="ranking-container">
         <h2>Rank Your Priorities</h2>
-        <ul class="draggable-items" id="draggableItems"></ul>
+        <ul class="priority-list" id="priorityList"></ul>
         <div class="checkbox-group">
             <input type="checkbox" id="excludeCollege">
             <label for="excludeCollege">College is not applicable</label>
@@ -181,76 +219,64 @@
         const urlParams = new URLSearchParams(window.location.search);
         const scoreType = urlParams.get('type');
         const priorities = ['Retirement', 'Life Insurance', 'Debt', 'College'];
-        const draggableItems = document.getElementById('draggableItems');
+        const priorityList = document.getElementById('priorityList');
         let currentOrder = [...priorities];
 
-        // Initialize draggable items
-        function initDragAndDrop() {
-            priorities.forEach(priority => {
-                const li = document.createElement('li');
-                li.className = 'draggable-item';
-                li.draggable = true;
-                li.textContent = priority;
-                li.dataset.priority = priority;
-                draggableItems.appendChild(li);
-            });
-
-            const items = document.querySelectorAll('.draggable-item');
-            items.forEach(item => {
-                item.addEventListener('dragstart', dragStart);
-                item.addEventListener('dragend', dragEnd);
-                item.addEventListener('dragover', dragOver);
-                item.addEventListener('dragenter', dragEnter);
-                item.addEventListener('dragleave', dragLeave);
-                item.addEventListener('drop', drop);
-            });
-        }
-
-        let draggedItem = null;
-
-        function dragStart(e) {
-            draggedItem = e.target;
-            e.target.classList.add('dragging');
-        }
-
-        function dragEnd(e) {
-            e.target.classList.remove('dragging');
-            draggedItem = null;
-            updateOrder();
-        }
-
-        function dragOver(e) {
-            e.preventDefault();
-        }
-
-        function dragEnter(e) {
-            e.preventDefault();
-            this.classList.add('hovered');
-        }
-
-        function dragLeave() {
-            this.classList.remove('hovered');
-        }
-
-        function drop(e) {
-            e.preventDefault();
-            if (draggedItem !== this) {
-                const draggedIndex = Array.from(draggableItems.children).indexOf(draggedItem);
-                const droppedIndex = Array.from(draggableItems.children).indexOf(this);
-                if (draggedIndex < droppedIndex) {
-                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
-                } else {
-                    this.parentNode.insertBefore(draggedItem, this);
+        function initPriorityList() {
+            priorityList.innerHTML = '';
+            currentOrder.forEach(priority => {
+                if (priority !== 'College' || !document.getElementById('excludeCollege').checked) {
+                    const li = document.createElement('li');
+                    li.className = 'priority-item';
+                    li.dataset.priority = priority;
+                    li.innerHTML = `
+                        <span class="priority-text">${priority}</span>
+                        <div class="arrow-buttons">
+                            <button class="arrow-btn" onclick="moveUp('${priority}')">↑</button>
+                            <button class="arrow-btn" onclick="moveDown('${priority}')">↓</button>
+                        </div>
+                    `;
+                    priorityList.appendChild(li);
                 }
-            }
-            this.classList.remove('hovered');
-            updateOrder();
+            });
+            updateButtons();
+            document.getElementById('nextButton').disabled = currentOrder.length === 0 || currentOrder.some(p => p === 'College' && document.getElementById('excludeCollege').checked);
         }
 
-        function updateOrder() {
-            currentOrder = Array.from(draggableItems.children).map(item => item.dataset.priority);
-            document.getElementById('nextButton').disabled = false;
+        function moveUp(priority) {
+            const index = currentOrder.indexOf(priority);
+            if (index > 0) {
+                [currentOrder[index - 1], currentOrder[index]] = [currentOrder[index], currentOrder[index - 1]];
+                initPriorityList();
+            }
         }
+
+        function moveDown(priority) {
+            const index = currentOrder.indexOf(priority);
+            if (index < currentOrder.length - 1 && (currentOrder[index + 1] !== 'College' || !document.getElementById('excludeCollege').checked)) {
+                [currentOrder[index], currentOrder[index + 1]] = [currentOrder[index + 1], currentOrder[index]];
+                initPriorityList();
+            }
+        }
+
+        function updateButtons() {
+            const items = priorityList.querySelectorAll('.priority-item');
+            items.forEach((item, index) => {
+                const upBtn = item.querySelector('.arrow-btn:nth-child(1)');
+                const downBtn = item.querySelector('.arrow-btn:nth-child(2)');
+                upBtn.disabled = index === 0;
+                downBtn.disabled = index === items.length - 1 || (currentOrder[index + 1] === 'College' && document.getElementById('excludeCollege').checked);
+            });
+        }
+
+        document.getElementById('excludeCollege').addEventListener('change', function() {
+            if (this.checked) {
+                currentOrder = currentOrder.filter(p => p !== 'College');
+            } else {
+                if (!currentOrder.includes('College')) currentOrder.push('College');
+            }
+            initPriorityList();
+        });
 
         function goToCalculator() {
             const excludeCollege = document.getElementById('excludeCollege').checked;
@@ -258,8 +284,8 @@
             window.location.href = url;
         }
 
-        // Initialize drag and drop
-        document.addEventListener('DOMContentLoaded', initDragAndDrop);
+        // Initialize the priority list
+        document.addEventListener('DOMContentLoaded', initPriorityList);
     </script>
 </body>
 </html>
