@@ -64,7 +64,7 @@
             max-width: 800px;
             margin: 0 auto 40px;
             text-align: center;
-            color: white; /* Changed to white for visibility on blue background */
+            color: white;
             font-size: 18px;
             font-weight: 500;
         }
@@ -77,6 +77,7 @@
             max-width: 800px;
             margin: 0 auto;
             transition: transform 0.2s ease;
+            position: relative;
         }
 
         .ranking-container:hover {
@@ -93,6 +94,7 @@
             list-style: none;
             padding: 0;
             margin-bottom: 20px;
+            position: relative;
         }
 
         .priority-item {
@@ -106,42 +108,41 @@
             margin-bottom: 10px;
             font-size: 16px;
             color: var(--primary);
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, background 0.2s ease;
+            cursor: move;
+            user-select: none;
+            position: relative;
         }
 
         .priority-item:hover {
             border-color: var(--secondary);
         }
 
+        .priority-item.dragging {
+            opacity: 0.5;
+            background: #e0f0ef;
+            z-index: 1;
+        }
+
         .priority-text {
             flex: 1;
         }
 
-        .arrow-buttons {
-            display: flex;
-            gap: 10px;
+        .drag-handle {
+            width: 20px;
+            height: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path fill="%2326a69a" d="M7 4h2v12H7zm4 0h2v12h-2z"/></svg>') no-repeat center;
+            margin-right: 10px;
         }
 
-        .arrow-btn {
+        .drop-indicator {
+            position: absolute;
+            height: 2px;
             background: var(--secondary);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-
-        .arrow-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .arrow-btn:hover:not(:disabled) {
-            background: #1f857b;
-            transform: scale(1.1);
+            width: 100%;
+            left: 0;
+            z-index: 2;
+            transition: top 0.1s ease;
         }
 
         .checkbox-group {
@@ -156,7 +157,7 @@
         }
 
         .next-button {
-            background: var(--accent); /* Changed to yellow */
+            background: var(--accent);
             color: white;
             padding: 15px 30px;
             border: none;
@@ -184,12 +185,8 @@
                 text-align: center;
             }
             .priority-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .arrow-buttons {
-                margin-top: 10px;
+                flex-direction: row;
+                align-items: center;
             }
         }
     </style>
@@ -203,7 +200,7 @@
         </div>
     </div>
 
-    <p class="intro-text">Order your financial priorities from most important to least important.</p>
+    <p class="intro-text">Drag and drop to order your financial priorities from most important to least important.</p>
 
     <div class="ranking-container">
         <h2>Rank Your Priorities</h2>
@@ -221,52 +218,111 @@
         const priorities = ['Retirement', 'Life Insurance', 'Debt', 'College'];
         const priorityList = document.getElementById('priorityList');
         let currentOrder = [...priorities];
+        let dropIndicator;
 
         function initPriorityList() {
+            // Clear existing content
             priorityList.innerHTML = '';
+
+            // Rebuild the priority list based on currentOrder and checkbox state
             currentOrder.forEach(priority => {
                 if (priority !== 'College' || !document.getElementById('excludeCollege').checked) {
                     const li = document.createElement('li');
                     li.className = 'priority-item';
                     li.dataset.priority = priority;
+                    li.draggable = true;
                     li.innerHTML = `
+                        <div class="drag-handle"></div>
                         <span class="priority-text">${priority}</span>
-                        <div class="arrow-buttons">
-                            <button class="arrow-btn" onclick="moveUp('${priority}')">↑</button>
-                            <button class="arrow-btn" onclick="moveDown('${priority}')">↓</button>
-                        </div>
                     `;
                     priorityList.appendChild(li);
                 }
             });
-            updateButtons();
-            document.getElementById('nextButton').disabled = currentOrder.length === 0 || currentOrder.some(p => p === 'College' && document.getElementById('excludeCollege').checked);
-        }
 
-        function moveUp(priority) {
-            const index = currentOrder.indexOf(priority);
-            if (index > 0) {
-                [currentOrder[index - 1], currentOrder[index]] = [currentOrder[index], currentOrder[index - 1]];
-                initPriorityList();
+            // Update Next button state
+            document.getElementById('nextButton').disabled = currentOrder.length === 0 || 
+                currentOrder.some(p => p === 'College' && document.getElementById('excludeCollege').checked);
+
+            // Remove existing drop indicator if it exists and recreate it
+            if (dropIndicator) {
+                dropIndicator.remove();
             }
+            dropIndicator = document.createElement('div');
+            dropIndicator.className = 'drop-indicator';
+            dropIndicator.style.display = 'none';
+            priorityList.appendChild(dropIndicator);
+
+            // Reattach drag-and-drop event listeners
+            addDragAndDrop();
         }
 
-        function moveDown(priority) {
-            const index = currentOrder.indexOf(priority);
-            if (index < currentOrder.length - 1 && (currentOrder[index + 1] !== 'College' || !document.getElementById('excludeCollege').checked)) {
-                [currentOrder[index], currentOrder[index + 1]] = [currentOrder[index + 1], currentOrder[index]];
-                initPriorityList();
-            }
-        }
-
-        function updateButtons() {
+        function addDragAndDrop() {
             const items = priorityList.querySelectorAll('.priority-item');
-            items.forEach((item, index) => {
-                const upBtn = item.querySelector('.arrow-btn:nth-child(1)');
-                const downBtn = item.querySelector('.arrow-btn:nth-child(2)');
-                upBtn.disabled = index === 0;
-                downBtn.disabled = index === items.length - 1 || (currentOrder[index + 1] === 'College' && document.getElementById('excludeCollege').checked);
+            let draggedItem = null;
+
+            items.forEach(item => {
+                item.addEventListener('dragstart', (e) => {
+                    draggedItem = item;
+                    item.classList.add('dragging');
+                    dropIndicator.style.display = 'block';
+                });
+
+                item.addEventListener('dragend', () => {
+                    item.classList.remove('dragging');
+                    dropIndicator.style.display = 'none';
+                    draggedItem = null;
+                    updateOrderFromDOM();
+                });
+
+                item.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(priorityList, e.clientY);
+                    if (afterElement) {
+                        const rect = afterElement.getBoundingClientRect();
+                        dropIndicator.style.top = `${rect.top - priorityList.getBoundingClientRect().top}px`;
+                    } else {
+                        const lastItem = priorityList.querySelector('.priority-item:last-child');
+                        if (lastItem) {
+                            const rect = lastItem.getBoundingClientRect();
+                            dropIndicator.style.top = `${rect.bottom - priorityList.getBoundingClientRect().top}px`;
+                        } else {
+                            dropIndicator.style.top = '0px'; // Default to top if list is empty
+                        }
+                    }
+                });
+
+                item.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const afterElement = getDragAfterElement(priorityList, e.clientY);
+                    if (afterElement) {
+                        priorityList.insertBefore(draggedItem, afterElement);
+                    } else {
+                        priorityList.appendChild(draggedItem);
+                    }
+                });
+
+                item.addEventListener('dragenter', (e) => {
+                    e.preventDefault();
+                });
             });
+        }
+
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.priority-item:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function updateOrderFromDOM() {
+            const items = priorityList.querySelectorAll('.priority-item');
+            currentOrder = Array.from(items).map(item => item.dataset.priority);
         }
 
         document.getElementById('excludeCollege').addEventListener('change', function() {
@@ -284,7 +340,6 @@
             window.location.href = url;
         }
 
-        // Initialize the priority list
         document.addEventListener('DOMContentLoaded', initPriorityList);
     </script>
 </body>
